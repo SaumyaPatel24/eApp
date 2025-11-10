@@ -1,0 +1,9 @@
+# SENSITIVE FILES - MUST BE EXCLUDED
+.env
+
+# NODE & BUILD ARTIFACTS - Exclude large/temporary files
+/node_modules
+/build
+/dist
+.DS_Store
+npm-debug.log
