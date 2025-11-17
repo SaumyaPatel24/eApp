@@ -1,8 +1,7 @@
-import logo from '../assets/images/logo.png';
+import textlogo from '../assets/images/textlogo.svg';
 import cartsvg from "../assets/images/cartsvg.svg";
 import logoutsvg from "../assets/images/logoutsvg.svg";
 import searchsvg from "../assets/images/searchsvg.svg";
-
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useState, useRef, useEffect } from "react";
 import { useCart } from "../context/CartContext";
@@ -39,33 +38,33 @@ export default function Navbar() {
 
 
   return (
-    <header className="bg-white border-b shadow-sm px-6 py-3">
-      <div className="flex justify-between items-center w-full">
-      <NavLink to="/" className="text-xl font-semibold">
-          <img 
-      src={logo}
-      alt="MyStore Logo" 
-      className="h-20 w-auto object-contain"
-      />
+    <header className="bg-black border-b shadow-sm py-3 px-6 flex items-center justify-center relative sticky top-0 left-0 w-full z-50">
+     <div className="flex justify-center w-1/3 absolute left-1/2 transform -translate-x-1/2">
+      <NavLink to="/" className="flex items-center justify-center">
+        <img
+          src={textlogo}
+          alt="MyStore Logo"
+          className="h-25 object-contain"
+        />
       </NavLink>
-
+    </div>
       <div className="w-full flex justify-end items-center gap-5 px-6 py-3">
-        <button
-            onClick={() => setShowSearch(!showSearch)}
-            className="text-gray-600 hover:text-black"
-          >
-            <img 
-              src={searchsvg}
-              alt="searchlogo" 
-              className="h-8 w-auto object-contain"
+          {!showSearch && (
+            <button
+              onClick={() => setShowSearch(true)}
+              className="text-gray-600 hover:text-black"
+            >
+              <img 
+                src={searchsvg}
+                alt="searchlogo" 
+                className="h-15 w-auto object-contain"
               />
-          </button>
-
-          {/* ✅ Popup Search Box */}
+            </button>
+          )}
           {showSearch && (
             <div
               ref={searchRef}
-              className="mx-6 flex w-1/3"
+              className="mx-6 flex w-1/10"
             >
               <form onSubmit={handleSearch}>
                 <input
@@ -85,7 +84,7 @@ export default function Navbar() {
   <img 
     src={cartsvg} 
     alt="Cart" 
-    className="h-10 cursor-pointer"
+    className="h-15 cursor-pointer"
   />
 
   {cart.length > 0 && (
@@ -105,12 +104,12 @@ export default function Navbar() {
 
       {user ? (
             <div className="flex items-center gap-3">
-              <span>Hello, {user.firstName}</span>
+              <span className="text-orange-400">Hello, {user.firstName}</span>
               <button onClick={logout} className="text-red-600">
                 <img 
                   src={logoutsvg}
                   alt="logoutlogo" 
-                  className="h-6 w-auto object-contain"
+                  className="h-15 w-auto object-contain"
                   />
               </button>
             </div>
@@ -118,7 +117,6 @@ export default function Navbar() {
             <NavLink to="/signin">Sign In / Register</NavLink>
           )}
 
-      </div>
       </div>
     </header>
   );

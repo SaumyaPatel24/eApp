@@ -1,8 +1,11 @@
 import { useCart } from "../context/CartContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
 export default function CartPage() {
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
-
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -14,6 +17,17 @@ export default function CartPage() {
 
   // ✅ Final total
   const total = subtotal + taxAmount;
+
+  const handleCheckout = () => {
+    if (!user) {
+      // Not logged in → redirect to sign in with return URL
+      return navigate("/signin", {
+        state: { from: "/checkout" }
+      });
+    }
+
+    navigate("/checkout");
+  };
 
   if (cart.length === 0) {
     return (
@@ -30,7 +44,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto mt-10">
+    <div className="bg-white rounded-xl w-full min-h-screen px-8 py-10">
       <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
 
       <div className="space-y-6">
@@ -56,6 +70,10 @@ export default function CartPage() {
               </p>
               <p className="text-gray-600">
                 Size: <span className="font-medium">{item.size}</span>
+              </p>
+
+              <p className="text-gray-600">
+                Gender: <span className="font-medium">{item.gender}</span>
               </p>
 
               <div className="flex items-center gap-3">
@@ -129,6 +147,7 @@ export default function CartPage() {
 
         {/* ✅ Checkout Button */}
         <button
+          onClick={handleCheckout}
           className="mt-6 w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition text-lg font-semibold"
         >
           Proceed to Checkout

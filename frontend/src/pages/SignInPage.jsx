@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
@@ -11,7 +11,7 @@ export default function SignIn() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
-
+  const location = useLocation();
   const handleChange = (e) => {
     setForm({ 
       ...form, 
@@ -39,9 +39,9 @@ export default function SignIn() {
 
       // ✅ save token locally
       localStorage.setItem("token", data.token);
+      const from = location.state?.from || "/";
       login(data.user);
-      // ✅ send user to signin or home
-      navigate("/");
+      navigate(from, { replace: true });
 
     } catch (err) {
       setError(err.message);

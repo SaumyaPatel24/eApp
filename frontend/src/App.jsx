@@ -6,12 +6,12 @@ import SignUpPage from "./pages/SignUpPage";
 import CartPage from "./pages/CartPage";
 import ProductPage from "./pages/ProductPage";
 import SearchPage from "./pages/SearchPage";
-
+import CheckoutPage from "./pages/CheckoutPage";
 export default function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black">
     <Navbar />
-    <main className="mx-auto max-w-7xl px-4 py-6">
+    <main className="bg-black py-3 px-6 relative flex items-center justify-center relative">
       <Routes>
         <Route path="/" element={<CatalogPage />} />
         <Route path="/product/:id" element={<ProductPage />} />
@@ -19,8 +19,13 @@ export default function App() {
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
       </Routes>
     </main>
     </div>
   )
 }
+
+
+
+

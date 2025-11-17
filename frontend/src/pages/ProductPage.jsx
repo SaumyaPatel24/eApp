@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -7,6 +7,8 @@ import AddReviewForm from "../components/AddReviewForm";
 import Reviews from "../components/Reviews";
 
 export default function ProductPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
   const [product, setProduct] = useState(null);
 
@@ -23,6 +25,27 @@ export default function ProductPage() {
   const { user: loggedInUser } = useAuth();
   const [reviews, setReviews] = useState([]);
 
+  const handleBack = () => {
+    if (location.state?.from) {
+      navigate(location.state.from, { replace: false });
+
+      setTimeout(() => {
+        // Try to locate the card by product ID
+        const card = document.querySelector(`[data-product-id="${location.state.productId}"]`);
+        if (card) {
+          card.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else {
+          // fallback scroll if element not found
+          window.scrollTo({ top: location.state.scrollY || 0, behavior: "smooth" });
+        }
+      }, 400); // small delay to allow DOM re-render
+    } else {
+      navigate("/catalog");
+    }
+  };
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, []);
   // Load product info
   useEffect(() => {
     async function loadProduct() {
@@ -68,6 +91,7 @@ export default function ProductPage() {
     color: selectedColor,
     size: selectedSize,
     quantity: quantity,
+    gender: product.gender
   };
 
     addToCart(item);
@@ -78,15 +102,23 @@ export default function ProductPage() {
 
 
   return (
+    <div className="bg-white min-h-screen px-8 py-10">
     <div className="max-w-5xl mx-auto mt-10 flex gap-12">
 
       {/* LEFT — Product Image */}
+      <div className="w-1/2">
+      <button
+        onClick={handleBack}
+        className="mb-4 bg-gray-200 px-3 py-2 rounded hover:bg-gray-300"
+      >
+        ← Back to Catalog
+      </button>
       <img
         src={product.imageUrl}
         alt={product.name}
-        className="w-1/2 rounded-lg shadow"
+        className="h-100 w-full object-cover rounded mb-4"
       />
-
+      </div>
       {/* RIGHT — Product Info */}
       <div className="w-1/2">
         <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
@@ -95,6 +127,7 @@ export default function ProductPage() {
         <span className="text-gray-600">{product.reviewCount} reviews</span>
         </div>
         <p className="text-gray-700 mb-1">{product.brand}</p>
+        <p className="text-gray-500 mb-4">{product.gender}</p>
         <p className="text-2xl font-bold mb-6">${product.price}</p>
         
         {/* COLOR SELECTOR */}
@@ -190,26 +223,26 @@ export default function ProductPage() {
           Add to Cart
         </button>
   {/* REVIEWS SECTION */}
-<div className="mt-16 border-t pt-6">
-  <h2 className="text-2xl font-semibold mb-4">Customer Reviews</h2>
+  </div>
+      </div>
+      <div className="mt-16 border-t pt-6">
+    <h2 className="text-2xl font-semibold mb-4">Customer Reviews</h2>
 
-  {!loggedInUser && (
-    <p className="text-gray-600 mb-4">
-      Please <a href="/signin" className="text-blue-600 underline">sign in</a> to write a review.
-    </p>
-  )}
+    {!loggedInUser && (
+      <p className="text-gray-600 mb-4">
+        Please <a href="/signin" className="text-blue-600 underline">sign in</a> to write a review.
+      </p>
+    )}
 
-  {loggedInUser && (
-    <AddReviewForm 
-      productId={product.id}
-      onReviewAdded={() => {}}
-    />
-  )}
-  <Reviews productId={product.id} />
-</div>
-</div>
-    </div>
-    
+    {loggedInUser && (
+      <AddReviewForm 
+        productId={product.id}
+        onReviewAdded={() => {}}
+      />
+    )}
+    <Reviews productId={product.id} />
+  </div>
+   </div> 
 
     
   );

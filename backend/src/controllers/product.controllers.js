@@ -3,6 +3,7 @@ import * as productService from '../services/product.services.js';
 export const getAllProducts = async (req, res) => {
   try {
     const filters = req.query;
+    console.log("Received filters:", req.query);
     const products = await productService.getAllProducts(filters);
     res.json(products);
   } catch (err) {

@@ -10,18 +10,11 @@ const Product = sequelize.define('Product', {
   rating: { type: DataTypes.FLOAT, defaultValue: 0 },
   stock: { type: DataTypes.INTEGER, defaultValue: 0 },
   imageUrl: { type: DataTypes.STRING, allowNull: true },
-  colors: { 
-    type: DataTypes.JSON, 
-    defaultValue: [] 
-  },
-  sizes: { 
-    type: DataTypes.JSON, 
-    defaultValue: [] 
-  },
   variants: {
     type: DataTypes.JSON,
     defaultValue: []
-  }
+  },
+  gender: { type: DataTypes.STRING, allowNull: false, defaultValue: "Unisex" }
 }, {
   tableName: 'products',
   timestamps: false
