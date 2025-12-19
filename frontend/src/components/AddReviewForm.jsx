@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { BASE_URL } from "../api/client";
 
 export default function AddReviewForm({ productId, onReviewAdded }) {
   const [rating, setRating] = useState(5);
@@ -9,21 +10,21 @@ export default function AddReviewForm({ productId, onReviewAdded }) {
   const submitReview = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/api/reviews", {
+    const res = await fetch(`${BASE_URL}/api/reviews`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         productId,
-        userId: user.id,    // ✅ correct user ID
+        userId: user.id,  
         rating,
-        comment,            // ✅ backend expects "comment"
+        comment,            
       }),
     });
 
     const data = await res.json();
 
     if (res.ok) {
-      onReviewAdded(data);  // ✅ send new review upward
+      onReviewAdded(data);  
       setComment("");
     } else {
       alert(data.message);
@@ -55,9 +56,10 @@ export default function AddReviewForm({ productId, onReviewAdded }) {
         required
       />
 
-      <button className="bg-black text-white px-4 py-2 rounded">
+      <button type="submit" className="rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-black shadow-lg hover:bg-orange-400 transition">
         Submit Review
       </button>
+
     </form>
   );
 }

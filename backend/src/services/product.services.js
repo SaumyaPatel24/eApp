@@ -6,22 +6,22 @@ export const getAllProducts = async (filters) => {
   const andConditions = [];
   let order = [];
 
-  // 🏷️ Category (shoe type)
+  // Category
   if (filters.category) {
-    where.category = filters.category; // e.g. Running, Lifestyle, Gym, Hiking, Slides
+    where.category = filters.category; 
   }
 
-  // 🧢 Brand filter
+  // Brand filter
   if (filters.brand) {
     where.brand = filters.brand;
   }
 
-  // 🚻 Gender filter
+  // Gender filter
   if (filters.gender) {
-    where.gender = filters.gender; // Men, Women, Unisex
+    where.gender = filters.gender;
   }
 
-  // 🎨 Color filter (search in variants)
+  // Color filter
   if (filters.color && filters.size) {
     andConditions.push(
       literal(`
@@ -33,7 +33,7 @@ export const getAllProducts = async (filters) => {
       `)
     );
   }
-  // ✅ Color-only filter
+  // Color-only filter
   else if (filters.color) {
     andConditions.push(
       literal(`
@@ -41,7 +41,7 @@ export const getAllProducts = async (filters) => {
       `)
     );
   }
-  // ✅ Size-only filter
+  // Size-only filter
   else if (filters.size) {
     andConditions.push(
       literal(`
@@ -55,19 +55,19 @@ export const getAllProducts = async (filters) => {
   }
 
 
-  // 💰 Price range
+  // Price range
   if (filters.minPrice || filters.maxPrice) {
     where.price = {};
     if (filters.minPrice) where.price[Op.gte] = filters.minPrice;
     if (filters.maxPrice) where.price[Op.lte] = filters.maxPrice;
   }
 
-  // 🔍 Text search (by product name)
+  // Text search
   if (filters.search) {
     where.name = { [Op.like]: `%${filters.search}%` };
   }
 
-  // 🧭 Sorting options
+  // Sorting options
   if (filters.sort) {
     if (filters.sort === "price_asc") order = [["price", "ASC"]];
     if (filters.sort === "price_desc") order = [["price", "DESC"]];
@@ -84,4 +84,39 @@ export const getAllProducts = async (filters) => {
 
 export const getProductById = async (id) => {
   return await Product.findByPk(id);
+};
+
+export const createProduct = async (data) => {
+  const payload = { ...data };
+  if (typeof payload.variants === "string") {
+    try {
+      payload.variants = JSON.parse(payload.variants);
+    } catch {
+    }
+  }
+  const product = await Product.create(payload);
+  return product;
+};
+
+export const updateProduct = async (id, data) => {
+  const product = await Product.findByPk(id);
+  if (!product) return null;
+
+  const payload = { ...data };
+  if (typeof payload.variants === "string") {
+    try {
+      payload.variants = JSON.parse(payload.variants);
+    } catch {
+    }
+  }
+
+  await product.update(payload);
+  return product;
+};
+
+export const deleteProduct = async (id) => {
+  const product = await Product.findByPk(id);
+  if (!product) return false;
+  await product.destroy();
+  return true;
 };

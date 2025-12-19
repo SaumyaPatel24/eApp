@@ -7,6 +7,7 @@ import CartPage from "./pages/CartPage";
 import ProductPage from "./pages/ProductPage";
 import SearchPage from "./pages/SearchPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import Profile from "./pages/Profile";
 export default function App() {
   return (
     <div className="min-h-screen bg-black">
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </main>
     </div>

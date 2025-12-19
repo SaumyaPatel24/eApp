@@ -1,3 +1,4 @@
+// final code
 import textlogo from '../assets/images/textlogo.svg';
 import cartsvg from "../assets/images/cartsvg.svg";
 import logoutsvg from "../assets/images/logoutsvg.svg";
@@ -6,6 +7,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useState, useRef, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext"
+
 export default function Navbar() {
   const { cart } = useCart();
   const { user, logout } = useAuth();
@@ -15,7 +17,6 @@ export default function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
   const searchRef = useRef(null);
 
-  // ✅ Close the search popup if user clicks outside
   useEffect(() => {
     const handleClick = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
@@ -28,7 +29,6 @@ export default function Navbar() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-
     const trimmed = query.trim();
     if (trimmed.length === 0) return;
 
@@ -36,89 +36,105 @@ export default function Navbar() {
     setShowSearch(false);
   };
 
-
   return (
-    <header className="bg-black border-b shadow-sm py-3 px-6 flex items-center justify-center relative sticky top-0 left-0 w-full z-50">
-     <div className="flex justify-center w-1/3 absolute left-1/2 transform -translate-x-1/2">
-      <NavLink to="/" className="flex items-center justify-center">
-        <img
-          src={textlogo}
-          alt="MyStore Logo"
-          className="h-25 object-contain"
-        />
-      </NavLink>
-    </div>
-      <div className="w-full flex justify-end items-center gap-5 px-6 py-3">
-          {!showSearch && (
-            <button
-              onClick={() => setShowSearch(true)}
-              className="text-gray-600 hover:text-black"
-            >
-              <img 
-                src={searchsvg}
-                alt="searchlogo" 
-                className="h-15 w-auto object-contain"
-              />
-            </button>
-          )}
-          {showSearch && (
-            <div
-              ref={searchRef}
-              className="mx-6 flex w-1/10"
-            >
-              <form onSubmit={handleSearch}>
+    <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-black/95 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+        {/* Logo */}
+        <NavLink to="/" className="flex items-center gap-2">
+          <img
+            src={textlogo}
+            alt="MyStore Logo"
+            className="h-17 w-auto object-contain"
+          />
+        </NavLink>
+
+        {/* Right side actions */}
+        <div className="flex items-center gap-4">
+
+          {/* Search button / input */}
+          <div className="flex items-center gap-2" ref={searchRef}>
+            {!showSearch && (
+              <button
+                onClick={() => setShowSearch(true)}
+                className="relative flex items-center rounded-full bg-zinc-900 px-3 py-2 text-sm font-medium text-zinc-100 ring-1 ring-zinc-800 hover:bg-zinc-800"
+              >
+                <img src={searchsvg} alt="Search" className="h-7 w-7" />
+              </button>
+            )}
+
+            {showSearch && (
+              <form onSubmit={handleSearch} className="flex items-center gap-2">
                 <input
                   type="text"
                   placeholder="Search products..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="w-full border rounded px-2 py-2"
+                  className="w-52 rounded-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                   autoFocus
                 />
+                {/* Close button */}
+                <button
+                  type="button"
+                  onClick={() => setShowSearch(false)}
+                  className="flex items-center justify-center rounded-full bg-zinc-900 p-2 text-zinc-300 ring-1 ring-zinc-800 hover:bg-zinc-800 hover:text-white"
+                >
+                  ✕
+                </button>
               </form>
-            </div>
+            )}
+          </div>
+
+          {/* Cart button */}
+          <NavLink
+            to="/cart"
+            className={({ isActive }) =>
+              `relative flex items-center rounded-full bg-zinc-900 px-3 py-2 text-sm font-medium text-zinc-100 ring-1 ring-zinc-800 hover:bg-zinc-800 ${
+                isActive ? "ring-orange-500" : ""
+              }`
+            }
+          >
+            <img src={cartsvg} alt="Cart" className="h-7 w-7" />
+            {cart.length > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-semibold text-black">
+                {cart.length}
+              </span>
+            )}
+          </NavLink>
+
+          {/* User / Logout */}
+          {user ? (
+      <div className="flex items-center gap-3">
+        {/* Username */}
+        <span
+          onClick={() => navigate("/profile")}
+          className="hidden text-sm text-orange-400 sm:inline cursor-pointer hover:underline"
+        >
+          Hello, {user.firstName}
+        </span>
+
+        {/* Logout button */}
+        <button
+          onClick={logout}
+          className="flex items-center justify-center rounded-full bg-zinc-900 p-2 text-red-400 ring-1 ring-zinc-800 hover:bg-zinc-800"
+        >
+          <img
+            src={logoutsvg}
+            alt="logoutlogo"
+            className="h-7 w-7 object-contain"
+          />
+        </button>
+      </div>
+      ) :  (
+            <NavLink
+              to="/signin"
+              className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-zinc-100"
+            >
+              Sign In / Register
+            </NavLink>
           )}
 
-    <NavLink to="/cart" className={({ isActive }) =>isActive ? "text-black font-semibold": "text-gray-600 hover:text-black"}>
-          <div className="relative">
-  <img 
-    src={cartsvg} 
-    alt="Cart" 
-    className="h-15 cursor-pointer"
-  />
-
-  {cart.length > 0 && (
-    <span className="
-      absolute -top-2 -right-2 
-      bg-red-600 text-white 
-      text-xs font-semibold 
-      rounded-full 
-      h-5 w-5 flex items-center justify-center
-      shadow
-    ">
-      {cart.length}
-    </span>
-  )}
-</div>
-    </NavLink>
-
-      {user ? (
-            <div className="flex items-center gap-3">
-              <span className="text-orange-400">Hello, {user.firstName}</span>
-              <button onClick={logout} className="text-red-600">
-                <img 
-                  src={logoutsvg}
-                  alt="logoutlogo" 
-                  className="h-15 w-auto object-contain"
-                  />
-              </button>
-            </div>
-          ) : (
-            <NavLink to="/signin">Sign In / Register</NavLink>
-          )}
-
+        </div>
       </div>
     </header>
   );
 }
-

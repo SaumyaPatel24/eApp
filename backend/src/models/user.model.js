@@ -10,6 +10,8 @@ const User = sequelize.define("User", {
   password: { type: DataTypes.STRING, allowNull: false },
 
   phone: { type: DataTypes.STRING },
+  role: { type: DataTypes.STRING, allowNull: false, defaultValue: "customer" },
+  address: { type: DataTypes.STRING, allowNull: true}
 }, {
   tableName: 'user',
   timestamps: false

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import { useCart } from "./CartContext";
 
 const AuthContext = createContext();
@@ -11,26 +11,31 @@ export function AuthProvider({ children }) {
 
   const { reloadCartForUser } = useCart();
 
-  // ✅ Login function
+  // login
   const login = (userData) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
-
-    // ✅ Sync the correct cart
     reloadCartForUser(userData);
   };
 
-  // ✅ Logout function
+  // logout
   const logout = () => {
     localStorage.removeItem("user");
     setUser(null);
-
-    // ✅ Switch back to guest cart
     reloadCartForUser(null);
   };
 
+  // update
+  const updateUser = (newData) => {
+    setUser((prev) => {
+      const updated = { ...prev, ...newData };
+      localStorage.setItem("user", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

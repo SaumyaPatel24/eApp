@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ProductGrid from "../components/ProductGrid";
+import { BASE_URL } from "../api/client";
 
 export default function SearchPage() {
   const location = useLocation();
@@ -9,10 +10,10 @@ export default function SearchPage() {
   const [products, setProducts] = useState([]);
   const [results, setResults] = useState([]);
 
-  // Load all products ONCE from backend
+  // Load all products from backend
   useEffect(() => {
     async function loadProducts() {
-      const res = await fetch("http://localhost:5000/api/products");
+      const res = await fetch(`${BASE_URL}/api/products`);
       const data = await res.json();
       setProducts(data);
     }
@@ -34,7 +35,7 @@ export default function SearchPage() {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-4">
+      <h2 className="text-white text-2xl font-semibold mb-4">
         Search results for "{query}"
       </h2>
 

@@ -3,11 +3,11 @@ export default function StarRating({ rating }) {
   
   for (let i = 1; i <= 5; i++) {
     if (rating >= i) {
-      stars.push("★");     // FULL STAR
+      stars.push("★");
     } else if (rating >= i - 0.5) {
-      stars.push("⯨");     // HALF STAR (better looking)
+      stars.push("⯨");
     } else {
-      stars.push("☆");     // EMPTY STAR
+      stars.push("☆");
     }
   }
 
