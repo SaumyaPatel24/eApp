@@ -7,17 +7,17 @@ A full-stack e-commerce application with separate customer and admin interfaces.
 http://3.12.26.122:5173
 http://3.12.26.122:5174
 ```
--**Admin-side initial credentials:**
--Super-admin:
--username: super@example.com
--password: superadmin123
+- **Admin-side initial credentials:**
+- Super-admin:
+username: super@example.com
+password: superadmin123
 
--Admin:
--username: admin@example.com
--password: admin123
+- Admin:
+username: admin@example.com
+password: admin123
 
--Customer:
-- Just sign up and then sign in.
+- Customer:
+Just sign up and then sign in.
 
 
 ## Project Structure
