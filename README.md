@@ -1,6 +1,12 @@
 # E-Commerce Project
 
 A full-stack e-commerce application with separate customer and admin interfaces.
+## Project Link
+
+```
+http://3.12.26.122:5173
+http://3.12.26.122:5174
+```
 
 ## Project Structure
 
