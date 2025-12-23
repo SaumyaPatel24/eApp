@@ -2,8 +2,10 @@
 .env
 
 # NODE & BUILD ARTIFACTS - Exclude large/temporary files
-/node_modules
+node_modules/
+**/node_modules/
 /build
 /dist
 .DS_Store
 npm-debug.log
+*.log
