@@ -1,14 +1,18 @@
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL 
+  ? `${import.meta.env.VITE_API_BASE_URL}/api`
+  : "http://localhost:3001/api";
 
 async function request(path, options = {}) {
-  const { token, ...rest } = options;
+  const token =
+    options.token || localStorage.getItem("token");
+
   const res = await fetch(`${BASE_URL}${path}`, {
     headers: {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(rest.headers || {}),
+      ...(options.headers || {}),
     },
-    ...rest,
+    ...options,
   });
 
   if (!res.ok) {
@@ -17,11 +21,11 @@ async function request(path, options = {}) {
   }
 
   const contentType = res.headers.get("content-type") || "";
-  if (contentType.includes("application/json")) {
-    return res.json();
-  }
-  return res.text();
+  return contentType.includes("application/json")
+    ? res.json()
+    : res.text();
 }
+
 
 export const api = {
   get: (path, opts) => request(path, opts),

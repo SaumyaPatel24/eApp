@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { BASE_URL } from "../api/client";
 
 export default function Reviews({ productId }) {
   const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     async function loadReviews() {
-      const res = await fetch(`http://localhost:5000/api/reviews/${productId}`);
+      const res = await fetch(`${BASE_URL}/api/reviews/${productId}`);
       const data = await res.json();
       setReviews(data);
     }

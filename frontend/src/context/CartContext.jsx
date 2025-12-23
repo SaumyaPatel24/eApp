@@ -6,7 +6,6 @@ export const useCart = () => useContext(CartContext);
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
 
-  // ✅ Load correct cart when context initializes
 useEffect(() => {
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -22,7 +21,6 @@ useEffect(() => {
 }, []);
 
 
-  // ✅ Helper: Save cart to localStorage
   const saveCart = (key, value) => {
     localStorage.setItem(key, JSON.stringify(value));
   };
@@ -37,21 +35,21 @@ useEffect(() => {
   );
 };
 
-  // ✅ Switch cart depending on login / logout
+  // Switch cart depending on login / logout
   const reloadCartForUser = (user) => {
     if (user) {
-      // ✅ logged-in cart
+      // logged-in cart
       const key = `cart_user_${user.id}`;
       const stored = JSON.parse(localStorage.getItem(key)) || [];
       setCart(stored);
     } else {
-      // ✅ guest cart
+      // guest cart
       const stored = JSON.parse(localStorage.getItem("cart_guest")) || [];
       setCart(stored);
     }
   };
 
-  // ✅ Save cart on every change
+  // Save cart on every change
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -63,7 +61,7 @@ useEffect(() => {
     }
   }, [cart]);
 
-  // ✅ Add item
+  // Add item
   const addToCart = (item) => {
     setCart((curr) => {
       const existing = curr.find(
@@ -82,12 +80,12 @@ useEffect(() => {
     });
   };
 
-  // ✅ Remove item
+  // Remove item
   const removeFromCart = (item) => {
     setCart((curr) => curr.filter((i) => i !== item));
   };
 
-  // ✅ Clear
+  // Clear
   const clearCart = () => setCart([]);
 
   return (

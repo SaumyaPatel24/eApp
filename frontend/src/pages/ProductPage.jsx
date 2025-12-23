@@ -1,32 +1,57 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import StarRating from "../components/StarRating";
 import AddReviewForm from "../components/AddReviewForm";
 import Reviews from "../components/Reviews";
+import { BASE_URL } from "../api/client";
+
 
 export default function ProductPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
   const [product, setProduct] = useState(null);
 
-  // Selected options
+
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
-  // UI state
+
   const [error, setError] = useState("");
 
   const { addToCart } = useCart();
 
   const { user: loggedInUser } = useAuth();
   const [reviews, setReviews] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
-  // Load product info
+  const handleBack = () => {
+    if (location.state?.from) {
+      navigate(location.state.from, { replace: false });
+
+      setTimeout(() => {
+        const card = document.querySelector(`[data-product-id="${location.state.productId}"]`);
+        if (card) {
+          card.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else {
+         
+          window.scrollTo({ top: location.state.scrollY || 0, behavior: "smooth" });
+        }
+      }, 400);
+    } else {
+      navigate("/catalog");
+    }
+  };
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, []);
   useEffect(() => {
     async function loadProduct() {
-      const res = await fetch(`http://localhost:5000/api/products/${id}`);
+      const res = await fetch(`${BASE_URL}/api/products/${id}`);
       const data = await res.json();
       setProduct(data);
     }
@@ -35,7 +60,6 @@ export default function ProductPage() {
 
   if (!product) return <div className="p-6">Loading...</div>;
 
-  // For now, use sample colors (later fetch from DB)
   const colors = product.variants
   ? product.variants.map(v => v.color)    
   : product.colors || [];                
@@ -68,48 +92,60 @@ export default function ProductPage() {
     color: selectedColor,
     size: selectedSize,
     quantity: quantity,
+    gender: product.gender
   };
 
     addToCart(item);
-
-    alert("Added to cart!");
+    setShowPopup(true);
+    setFadeOut(false);
+    setTimeout(() => setFadeOut(true), 1500);
+    setTimeout(() => setShowPopup(false), 2000);
   };
 
 
 
   return (
-    <div className="max-w-5xl mx-auto mt-10 flex gap-12">
+    <div className="min-h-screen bg-black px-4 py-10 text-zinc-50">
+    <div className="mx-auto mt-10 flex max-w-5xl gap-10">
 
       {/* LEFT — Product Image */}
+      <div className="w-full lg:w-1/2">
+      <button
+        onClick={handleBack}
+        className="mb-4 rounded-full bg-zinc-900 px-3 py-2 text-xs font-medium text-zinc-200 ring-1 ring-zinc-700 hover:bg-zinc-800"
+      >
+        ← Back to Catalog
+      </button>
       <img
         src={product.imageUrl}
         alt={product.name}
-        className="w-1/2 rounded-lg shadow"
+        className="mb-4 h-96 w-full rounded-2xl object-cover"
       />
-
+      </div>
       {/* RIGHT — Product Info */}
-      <div className="w-1/2">
-        <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
+      <div className="w-full lg:w-1/2">
+        <h1 className="mb-2 text-3xl font-semibold tracking-tight">{product.name}</h1>
         <div className="flex items-center gap-3 mb-4">
         <StarRating rating={product.rating} />
-        <span className="text-gray-600">{product.reviewCount} reviews</span>
+        <span className="text-sm text-zinc-400">{product.reviewCount} reviews</span>
         </div>
-        <p className="text-gray-700 mb-1">{product.brand}</p>
-        <p className="text-2xl font-bold mb-6">${product.price}</p>
+        <p className="mb-1 text-sm text-zinc-300">{product.brand}</p>
+        <p className="mb-4 text-sm text-zinc-500">{product.gender}</p>
+        <p className="mb-6 text-2xl font-semibold">${product.price}</p>
         
         {/* COLOR SELECTOR */}
         <div className="mb-6">
-          <h3 className="font-semibold mb-2">Color</h3>
+          <h3 className="mb-2 text-sm font-semibold text-zinc-100">Color</h3>
           <div className="flex gap-3">
             {colors.map((color) => (
               <button
                 key={color}
                 onClick={() => setSelectedColor(color)}
-                className={`px-4 py-2 border rounded 
+                className={`rounded-full border px-4 py-2 text-sm 
                 ${
                   selectedColor === color
-                    ? "bg-black text-white"
-                    : "bg-gray-100"
+                    ? "border-orange-500 bg-orange-500 text-black"
+                    : "border-zinc-700 bg-zinc-900 text-zinc-100"
                 }`}
               >
                 {color}
@@ -120,17 +156,17 @@ export default function ProductPage() {
 
         {/* SIZE SELECTOR */}
         <div className="mb-6">
-          <h3 className="font-semibold mb-2">Size</h3>
+          <h3 className="mb-2 text-sm font-semibold text-zinc-100">Size</h3>
           <div className="flex gap-3">
             {sizes.map((size) => (
               <button
                 key={size}
                 onClick={() => setSelectedSize(size)}
-                className={`px-4 py-2 border rounded 
+                className={`rounded-full border px-4 py-2 text-sm 
                 ${
                   selectedSize === size
-                    ? "bg-black text-white"
-                    : "bg-gray-100"
+                    ? "border-orange-500 bg-orange-500 text-black"
+                    : "border-zinc-700 bg-zinc-900 text-zinc-100"
                 }`}
               >
                 {size}
@@ -141,7 +177,7 @@ export default function ProductPage() {
 
         {/* QUANTITY SELECTOR */}
         <div className="mb-6">
-  <h3 className="font-semibold mb-2">Quantity</h3>
+  <h3 className="mb-2 text-sm font-semibold text-zinc-100">Quantity</h3>
 
   <div className="flex items-center gap-3">
 
@@ -150,33 +186,33 @@ export default function ProductPage() {
       onClick={() => 
         setQuantity(q => (q > 1 ? q - 1 : 1))
       }
-      className="px-3 py-2 bg-gray-200 rounded text-xl hover:bg-gray-300"
+      className="rounded-full bg-zinc-900 px-3 py-2 text-lg hover:bg-zinc-800"
     >
       –
     </button>
 
     {/* QUANTITY DISPLAY */}
-    <span className="text-xl font-semibold">{quantity}</span>
+    <span className="text-lg font-semibold">{quantity}</span>
 
     {/* PLUS BUTTON */}
     <button
       onClick={() =>
         setQuantity(q => (q < product.stock ? q + 1 : q))
       }
-      className="px-3 py-2 bg-gray-200 rounded text-xl hover:bg-gray-300"
+      className="rounded-full bg-zinc-900 px-3 py-2 text-lg hover:bg-zinc-800"
     >
       +
     </button>
     </div>
 
-    <p className="text-sm text-gray-500 mt-1">
+    <p className="mt-1 text-xs text-zinc-500">
       {product.stock} available
     </p>
     </div>
 
         {/* ERROR MESSAGE */}
         {error && (
-          <p className="text-red-500 mb-4">
+          <p className="mb-4 text-sm text-red-400">
             {error}
           </p>
         )}
@@ -184,32 +220,44 @@ export default function ProductPage() {
         {/* ADD TO CART */}
         <button
           onClick={handleAddToCart}
-          className="w-full bg-black text-white py-3 rounded
-                     hover:bg-gray-800 transition"
+          className="w-full rounded-full bg-orange-500 py-3 text-sm font-semibold text-black hover:bg-orange-400"
         >
           Add to Cart
         </button>
+
+        {showPopup && (
+          <div
+            className={`fixed top-20 left-1/2 z-50 -translate-x-1/2 rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-black shadow-lg transition-opacity duration-500 ${
+              fadeOut ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            Added to cart!
+          </div>
+        )}
+
+
+
   {/* REVIEWS SECTION */}
-<div className="mt-16 border-t pt-6">
-  <h2 className="text-2xl font-semibold mb-4">Customer Reviews</h2>
+  </div>
+      </div>
+      <div className="mt-16 border-t border-zinc-800 pt-6">
+    <h2 className="mb-4 text-2xl font-semibold">Customer Reviews</h2>
 
-  {!loggedInUser && (
-    <p className="text-gray-600 mb-4">
-      Please <a href="/signin" className="text-blue-600 underline">sign in</a> to write a review.
-    </p>
-  )}
+    {!loggedInUser && (
+      <p className="mb-4 text-sm text-zinc-400">
+        Please <a href="/signin" className="text-orange-400 underline">sign in</a> to write a review.
+      </p>
+    )}
 
-  {loggedInUser && (
-    <AddReviewForm 
-      productId={product.id}
-      onReviewAdded={() => {}}
-    />
-  )}
-  <Reviews productId={product.id} />
-</div>
-</div>
-    </div>
-    
+    {loggedInUser && (
+      <AddReviewForm 
+        productId={product.id}
+        onReviewAdded={() => {}}
+      />
+    )}
+    <Reviews productId={product.id} />
+  </div>
+   </div> 
 
     
   );

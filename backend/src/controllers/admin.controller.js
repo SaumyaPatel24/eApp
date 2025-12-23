@@ -36,8 +36,7 @@ export const getAdminSummary = async (_req, res) => {
               ],
             },
           ],
-          order: [["id", "DESC"]],
-          limit: 5,
+          order: [["id", "DESC"]]
         }),
       ]);
 
@@ -113,7 +112,6 @@ export const createAdminUser = async (req, res) => {
         .json({ message: "firstName, lastName, email and password are required" });
     }
 
-    // Reuse normal registration logic (hashing, uniqueness checks)
     const created = await authService.registerUser({
       firstName,
       lastName,
@@ -122,7 +120,6 @@ export const createAdminUser = async (req, res) => {
       phone,
     });
 
-    // Then set the desired role (admin/superadmin) on the stored row
     const user = await User.findOne({ where: { email } });
     user.role = role;
     await user.save();

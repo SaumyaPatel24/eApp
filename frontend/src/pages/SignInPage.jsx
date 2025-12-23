@@ -1,6 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { BASE_URL } from "../api/client";
 
 export default function SignIn() {
   const [form, setForm] = useState({
@@ -11,7 +12,7 @@ export default function SignIn() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
-
+  const location = useLocation();
   const handleChange = (e) => {
     setForm({ 
       ...form, 
@@ -24,7 +25,7 @@ export default function SignIn() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -35,13 +36,13 @@ export default function SignIn() {
         throw new Error(errData.message || "Login failed");
       }
 
-      const data = await res.json(); // token + user
+      const data = await res.json();
 
-      // ✅ save token locally
+      // save token locally
       localStorage.setItem("token", data.token);
+      const from = location.state?.from || "/";
       login(data.user);
-      // ✅ send user to signin or home
-      navigate("/");
+      navigate(from, { replace: true });
 
     } catch (err) {
       setError(err.message);
@@ -50,8 +51,9 @@ export default function SignIn() {
 
 
   return (
-    <div className="mx-auto max-w-md mt-10 bg-white p-6 rounded-lg shadow">
-      <h2 className="text-2xl font-semibold mb-4">Sign In</h2>
+    <div className="flex min-h-screen items-center justify-center bg-black px-4 text-zinc-50">
+      <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950/80 p-6 shadow">
+      <h2 className="mb-4 text-2xl font-semibold tracking-tight">Sign In</h2>
 
       {error && (
         <div className="mb-3 p-2 bg-red-100 text-red-700 border border-red-400 rounded">
@@ -61,11 +63,11 @@ export default function SignIn() {
       
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
-          <label className="block text-sm mb-1">Email</label>
+          <label className="mb-1 block text-xs font-medium text-zinc-300">Email</label>
           <input
             type="email"
             name="email"
-            className="w-full border rounded px-3 py-2"
+            className="w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
             value={form.email}
             onChange={handleChange}
             required
@@ -73,7 +75,7 @@ export default function SignIn() {
         </div>
 
         <div>
-          <label className="block text-sm mb-1">Password</label>
+          <label className="mb-1 block text-xs font-medium text-zinc-300">Password</label>
           <input
             type="password"
             name="password"
@@ -86,21 +88,22 @@ export default function SignIn() {
 
         <button
           type="submit"
-          className="w-full bg-black text-white py-2 rounded hover:bg-gray-800"
+          className="w-full rounded-full bg-orange-500 py-2 text-sm font-semibold text-black hover:bg-orange-400"
         >
           Sign In
         </button>
       </form>
 
-      {/* ✅ Register link BELOW the login area */}
-      <div className="text-center text-sm mt-4">
-        <p className="text-gray-600">
+      {/* Register link */}
+      <div className="mt-4 text-center text-sm">
+        <p className="text-zinc-400">
           New here?{" "}
-          <Link to="/signup" className="text-blue-600 hover:underline">
+          <Link to="/signup" className="text-orange-400 hover:underline">
             Create an account
           </Link>
         </p>
       </div>
+    </div>
     </div>
   );
 }

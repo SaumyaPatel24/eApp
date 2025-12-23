@@ -59,12 +59,12 @@ export default function DashboardPage() {
       </div>
 
       <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4 text-sm space-y-2">
-        <h3 className="text-sm font-semibold text-slate-200">Recent Orders</h3>
+        <h3 className="text-sm font-semibold text-slate-200">All Orders</h3>
         {recentOrders.length === 0 && (
           <p className="text-xs text-slate-500">No orders yet.</p>
         )}
         {recentOrders.length > 0 && (
-          <ul className="space-y-2 max-h-64 overflow-y-auto">
+          <ul className="space-y-2 max-h-160 overflow-y-auto">
             {recentOrders.map((o) => (
               <li
                 key={o.id}

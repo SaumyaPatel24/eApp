@@ -9,7 +9,7 @@ const Order = sequelize.define(
     status: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "paid", // simple default; can expand later
+      defaultValue: "paid",
     },
     total: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
   },
